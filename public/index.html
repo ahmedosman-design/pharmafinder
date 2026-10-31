@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang='en'>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PharmaFinder - Log in</title>
+    <link href="/vendor/fonts.css" rel="stylesheet">
+    <link href="/vendor/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/app.css" rel="stylesheet">
+</head>
+<body>
+    <main class="pf-auth">
+        <section class="pf-auth-art">
+            <a class="pf-brand" href="/">
+                <svg class="pf-cross" viewBox="0 0 28 28" aria-hidden="true"><rect x="10" y="2" width="8" height="24" rx="2" fill="#fff"/><rect x="2" y="10" width="24" height="8" rx="2" fill="#fff"/></svg>
+                PharmaFinder
+            </a>
+            <div>
+                <h1>Your prescription, and where to fill it.</h1>
+                <p>Doctors issue clear digital prescriptions. You see which pharmacies near you have every medicine in stock, at what price, before you travel.</p>
+            </div>
+            <div class="pf-auth-slip" aria-hidden="true">
+                <div class="d-flex align-items-baseline"><span class="rx-mark">Rx</span><span class="rx-code">PF7K-AAA2</span></div>
+                <div class="rx-meta mt-1">Metformin 500mg, twice daily, 30 days</div>
+                <div class="rx-meta">In stock at 3 pharmacies within 4km</div>
+            </div>
+        </section>
+        <section class="pf-auth-form">
+            <div>
+                <span class="pf-demo">Demo build with synthetic data for Uasin Gishu County</span>
+                <ul class="nav nav-underline mb-4" role="tablist">
+                    <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#login-pane" type="button" role="tab">Log in</button></li>
+                    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#register-pane" type="button" role="tab">Create patient account</button></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="login-pane" role="tabpanel">
+                        <form id="login-form" novalidate>
+                            <div class="mb-3"><label class="form-label" for="l-email">Email</label>
+                                <input class="form-control" id="l-email" name="email" type="email" autocomplete="username" required>
+                            </div>
+                            <div class="mb-3"><label class="form-label" for="l-pass">Password</label>
+                                <input class="form-control" id="l-pass" name="password" type="password" autocomplete="current-password" required>
+                            </div>
+                            <div class="text-danger small mb-2" id="login-error" role="alert"></div>
+                            <button class="btn btn-primary w-100" type="submit">Log in</button>
+                        </form>
+                </div>
+</body>
