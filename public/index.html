@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang='en'>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,8 +21,8 @@
             </div>
             <div class="pf-auth-slip" aria-hidden="true">
                 <div class="d-flex align-items-baseline"><span class="rx-mark">Rx</span><span class="rx-code">PF7K-AAA2</span></div>
-                <div class="rx-meta mt-1">Metformin 500mg, twice daily, 30 days</div>
-                <div class="rx-meta">In stock at 3 pharmacies within 4km</div>
+                <div class="rx-meta mt-1">Metformin 500 mg, twice daily, 30 days</div>
+                <div class="rx-meta">In stock at 3 pharmacies within 4 km</div>
             </div>
         </section>
         <section class="pf-auth-form">
@@ -36,8 +36,7 @@
                     <div class="tab-pane fade show active" id="login-pane" role="tabpanel">
                         <form id="login-form" novalidate>
                             <div class="mb-3"><label class="form-label" for="l-email">Email</label>
-                                <input class="form-control" id="l-email" name="email" type="email" autocomplete="username" required>
-                            </div>
+                                <input class="form-control" id="l-email" name="email" type="email" autocomplete="username" required></div>
                             <div class="mb-3"><label class="form-label" for="l-pass">Password</label>
                                 <input class="form-control" id="l-pass" name="password" type="password" autocomplete="current-password" required>
                             </div>
@@ -51,7 +50,7 @@
                                 <li>Patient: aline.chepkoech@demo.pharmafinder.test</li>
                                 <li>Doctor: faith.chebet@demo.pharmafinder.test</li>
                                 <li>Pharmacist: grace.jebet@demo.pharmafinder.test</li>
-                                <li>Admin: admin@demo.jebet.pharmafinder.test</li>
+                                <li>Admin: admin@demo.pharmafinder.test</li>
                             </ul>
                         </details>
                     </div>
@@ -64,8 +63,8 @@
                                 <input class="form-control" id="r-email" name="email" type="email" required></div>
                             <div class="row g-2 mb-3">
                                 <div class="col-6"><label class="form-label" for="r-phone">Phone</label>
-                                    <input class="form control" id="r-phone" name="phone" placeholder="0712345678"></div>
-                                <div class="col-6"><label class="form-label" for="r-dob">Date of birth</label>"
+                                    <input class="form-control" id="r-phone" name="phone" placeholder="0712345678"></div>
+                                <div class="col-6"><label class="form-label" for="r-dob">Date of birth</label>
                                     <input class="form-control" id="r-dob" name="date_of_birth" type="date"></div>
                             </div>
                             <div class="mb-3"><label class="form-label" for="r-sub">Sub-county</label>
@@ -86,15 +85,15 @@
     <script src="/vendor/bootstrap.bundle.min.js"></script>
     <script src="/js/api.js"></script>
     <script>
-        const go = (role) => { window.location.href = `/${role},html`; };
-        PF.api("/api/auth/me").thrn((me) => go(me.role)).catch(() => {});
+        const go = (role) => { window.location.href = `/${role}.html`; };
+        PF.api("/api/auth/me").then((me) => go(me.role)).catch(() => {});
 
         document.getElementById("login-form").addEventListener("submit", async (e) => {
             e.preventDefault();
             const f = e.target, out = document.getElementById("login-error");
             out.textContent = "";
             try {
-                const r = await PF.api("/api/auth/login", { method: "POST", body: { email: f.email.value, f.password.value } });
+                const r = await PF.api("/api/auth/login", { method: "POST", body: { email: f.email.value, password: f.password.value } });
                 go(r.role);
             } catch (err) { out.textContent = err.message; }
         });
