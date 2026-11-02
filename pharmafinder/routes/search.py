@@ -56,7 +56,7 @@ def search_medicine():
     lat, lng = request.args.get("lat"), request.args.get("lng")
     origin = None
     if lat not in (None, "") and lng not in (None, ""):
-    origin = (as_float(lat, "lat", -90, 90), as_float(lng, "lng", -180, 180))
+        origin = (as_float(lat, "lat", -90, 90), as_float(lng, "lng", -180, 180))
     in_stock_only = request.args.get("in_stock", "1") == "1"
     open_now_only = request.args.get("open_now") == "1"
     max_km = as_float(request.args["max_km"], "max_km", 0.1, 500) if request.args.get("max_km") else None
@@ -94,3 +94,27 @@ def search_medicine():
         results.append(r)
     results.sort(key=SORT_KEYS[sort])
     return jsonify({"query": q, "sort": sort, "count": len(results), "results": results})
+
+
+@bp.get("/notifications")
+@login_required
+def notifications():
+    from ..security import current_user
+    rows = query(
+        """SELECT notification_id, channel, subject, body, delivery_status, created_at, read_at
+           FROM notifications WHERE user_id=%s ORDER BY created_at DESC, notification_id DESC LIMIT 50""",
+        (current_user()["user_id"],),
+    )
+    return jsonify(rows)
+
+
+@bp.post("/notifications/<int:notification_id>/read")
+@login_required
+def mark_read(notification_id):
+    from ..db import commit, execute
+    from ..security import current_user
+    from ..rx import now_local
+    execute("UPDATE notifications SET read_at=%s WHERE notification_id=%s AND user_id=%s AND read_at IS NULL",
+            (now_local(), notification_id, current_user()["user_id"]))
+    commit()
+    return jsonify({"ok": True})
