@@ -63,3 +63,27 @@ def is_open(open_days, opens_at, closes_at, now=None, tz="Africa/Nairobi"):
 
 def format_time(value):
     return _as_time(value).strftime("%H:%M")
+
+SORT_KEYS = {
+    "distance": lambda r: (r["distance_km"] is None, r["distance_km"] or 0, r["price_kes"] or 0),
+    "price": lambda r: (r["price_kes"] is None, r["price_kes"] or 0, r["distance_km"] or 0),
+    "stock": lambda r: (-(r["quantity"] or 0), r["distance_km"] or 0),
+}
+
+
+def rank_prescription_matches(pharmacies, needed_count):
+    """Order pharmacies for a prescription search.
+
+    1. Pharmacies that can fill every item come first.
+    2. Then those covering more items.
+    3. Ties broken by distance, then by total price of the items they can supply.
+    """
+    def key(p):
+        full = p["items_available"] == needed_count
+        return (
+            0 if full else 1,
+            -p["items_available"],
+            p["distance_km"] if p["distance_km"] is not None else float("inf"),
+            p["total_price_kes"],
+        )
+    return sorted(pharmacies, key=key)
