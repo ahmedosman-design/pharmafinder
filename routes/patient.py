@@ -133,3 +133,58 @@ def revoke_grant(grant_id):
 
 @bp.get("/prescriptions/<int:rx_id>/pharmacies")
 @roles_required("patient")
+def pharmacies_for_prescription(rx_id):
+    """Rank pharmacies by how much of this prescription they can supply, then distance."""
+    expire_overdue()
+    rx = _own_prescription(rx_id)
+    lat = request.args.get("lat")
+    lng = request.args.get("lng")
+    origin = None
+    if lat not in (None, "") and lng not in (None, ""):
+        origin = (as_float(lat, "lat", -90, 90), as_float(lng, "lng", -180, 180))
+
+    needed = {it["medicine_id"]: it["quantity"] for it in rx["items"]}
+    marks = ",".join(["%s"] * len(needed))
+    stock = query(
+        f"""SELECT s.pharmacy_id, s.medicine_id, s.quantity, s.price_kes, s.updated_at
+            FROM item_stock s JOIN pharmacies ph ON ph.pharmacy_id = s.pharmacy_id
+            WHERE ph.is_active = TRUE AND s.medicine_id IN ({marks})""",
+        tuple(needed),
+    )
+    pharmacies = query(
+        "SELECT pharmacy_id, name, address, latitude, longitude, open_days, opens_at, closes_at "
+        "FROM pharmacies WHERE is_active = TRUE"
+    )
+    tz = current_app.config["TIMEZONE"]
+    results = []
+    for ph in pharmacies:
+        lines = []
+        total = 0.0
+        available = 0
+        for it in rx["items"]:
+            s = next((s for s in stock if s["pharmacy_id"] == ph["pharmacy_id"]
+                      and s["medicine_id"] == it["medicine_id"]), None)
+            enough = bool(s and s["quantity"] >= it["quantity"])
+            if enough:
+                available += 1
+                total += float(s["price_kes"]) * it["quantity"]
+            lines.append({
+                "medicine_id": it["medicine_id"], "brand_name": it["brand_name"],
+                "needed": it["quantity"], "in_stock": s["quantity"] if s else 0,
+                "unit_price_kes": float(s["price_kes"]) if s else None,
+                "enough": enough, "updated_at": s["updated_at"] if s else None,
+            })
+        lat_f, lng_f = float(ph["latitude"]), float(ph["longitude"])
+        results.append({
+            "pharmacy_id": ph["pharmacy_id"], "name": ph["name"], "address": ph["address"],
+            "latitude": lat_f, "longitude": lng_f,
+            "distance_km": round(haversine_km(origin[0], origin[1], lat_f, lng_f), 2) if origin else None,
+            "open_days": ph["open_days"], "opens_at": format_time(ph["opens_at"]),
+            "closes_at": format_time(ph["closes_at"]),
+            "open_now": is_open(ph["open_days"], ph["opens_at"], ph["closes_at"], tz=tz),
+            "items_available": available, "items_needed": len(needed),
+            "can_fill_all": available == len(needed),
+            "total_price_kes": round(total, 2), "lines": lines,
+        })
+    return jsonify({"prescription_id": rx_id, "code": rx["code"], "status": rx["status"],
+                    "results": rank_prescription_matches(results, len(needed))})
