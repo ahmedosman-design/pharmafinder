@@ -76,8 +76,7 @@ MEDICINES = [
     ("Zinc Tablets", "Zinc sulphate", "20 mg dispersible tablet", False, 6),
 ]
 
-# Real Eldoret pharmacies: names, locations and hours from Google Maps (Nov 2026).
-# Stock levels and prices below are SIMULATED; licence numbers are not verified.
+
 PHARMACIES = [
     ("Eldobase Chemists Ltd", "UNVERIFIED-001", "Maraba Building, Ronald Ngala St, Eldoret CBD", 0.515333, 35.276803, "Mon-Sat", "08:00", "20:00"),
     ("Dr. Jim Chemist Ltd", "UNVERIFIED-002", "64 Arcade, Oloo Street, Eldoret CBD", 0.516311, 35.273803, "Mon-Fri", "07:30", "20:00"),
