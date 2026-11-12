@@ -1,3 +1,10 @@
+"""Create the schema and load sample data for Uasin Gishu County.
+
+Every person here is made up for testing; no real patient data is used. The
+pharmacies are real, but their stock levels, prices and licence numbers are simulated.
+
+Usage:  python -m database.seed            (uses DB_* settings from .env)
+"""
 import os
 import random
 import sys
@@ -15,7 +22,7 @@ from werkzeug.security import generate_password_hash  # noqa: E402
 PASSWORD = os.environ.get("PASSWORD", "Pharma2026")
 SCHEMA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "schema.sql")
 
-
+# (brand, generic, strength/form, requires prescription, typical unit price KES)
 MEDICINES = [
     ("Glucophage", "Metformin", "500 mg tablet", True, 8),
     ("Metformin Denk", "Metformin", "850 mg tablet", True, 10),
@@ -69,12 +76,13 @@ MEDICINES = [
     ("Zinc Tablets", "Zinc sulphate", "20 mg dispersible tablet", False, 6),
 ]
 
-#approximate pharmacies at real Eldoret-area coordinates
+# Real Eldoret pharmacies: names, locations and hours from Google Maps (Nov 2026).
+# Stock levels and prices below are SIMULATED; licence numbers are not verified.
 PHARMACIES = [
-    ("Eldoret Town Chemist", "PH-001", "Uganda Road, Eldoret CBD", 0.514300, 35.269800, "Daily", "07:30", "22:00"),
-    ("Kapsoya Pharmacy", "PH-002", "Kapsoya Estate, Eldoret", 0.531000, 35.300500, "Mon-Sat", "08:00", "20:00"),
-    ("Langas Pharmacy", "PH-003", "Langas, Kapseret", 0.485000, 35.270000, "Mon-Sat", "08:00", "19:00"),
-    ("Pioneer Chemist", "PH-004", "Pioneer, Eldoret", 0.532000, 35.285000, "Mon-Fri,Sun", "09:00", "18:00"),
+    ("Eldobase Chemists Ltd", "UNVERIFIED-001", "Maraba Building, Ronald Ngala St, Eldoret CBD", 0.515333, 35.276803, "Mon-Sat", "08:00", "20:00"),
+    ("Dr. Jim Chemist Ltd", "UNVERIFIED-002", "64 Arcade, Oloo Street, Eldoret CBD", 0.516311, 35.273803, "Mon-Fri", "07:30", "20:00"),
+    ("Keripharm Chemist", "UNVERIFIED-003", "Ndalat Rd, Langas, Kapseret", 0.510849, 35.259356, "Mon-Sat", "07:00", "21:00"),
+    ("Pioneer Meds", "UNVERIFIED-004", "Pioneer, Eldoret", 0.505825, 35.270470, "Daily", "07:00", "21:30"),
 ]
 
 DOCTORS = [
@@ -116,7 +124,7 @@ def connect(with_db=True):
 
 def run_schema(cur):
     with open(SCHEMA, encoding="utf-8") as fh:
-
+        # drop comment lines first so a ';' inside a comment can't split a statement
         sql = "\n".join(ln for ln in fh.read().splitlines() if not ln.strip().startswith("--"))
     for stmt in sql.split(";"):
         if stmt.strip():
@@ -132,7 +140,7 @@ def seed(cur, password=PASSWORD, with_sample_prescriptions=True):
                     (name, email, phone, pw, role))
         return cur.lastrowid
 
-    user("System Administrator", "admin@pharmafinder", "admin", "0700000001")
+    user("System Administrator", "admin@pharmafinder.test", "admin", "0700000001")
 
     for p in PHARMACIES:
         cur.execute("""INSERT INTO pharmacies (name, license_number, address, latitude, longitude,
@@ -140,20 +148,20 @@ def seed(cur, password=PASSWORD, with_sample_prescriptions=True):
 
     doctor_ids = []
     for i, (name, handle, lic, spec, facility) in enumerate(DOCTORS):
-        uid = user(name, f"{handle}@pharmafinder", "doctor", f"07110000{i:02d}")
+        uid = user(name, f"{handle}@pharmafinder.test", "doctor", f"07110000{i:02d}")
         cur.execute("INSERT INTO doctors (user_id, license_number, speciality, facility) VALUES (%s,%s,%s,%s)",
                     (uid, lic, spec, facility))
         doctor_ids.append(cur.lastrowid)
 
     for i, (name, handle, pharmacy_id, lic) in enumerate(PHARMACISTS):
-        uid = user(name, f"{handle}pharmafinder", "pharmacist", f"07220000{i:02d}")
+        uid = user(name, f"{handle}@pharmafinder.test", "pharmacist", f"07220000{i:02d}")
         cur.execute("INSERT INTO pharmacists (user_id, pharmacy_id, license_number) VALUES (%s,%s,%s)",
                     (uid, pharmacy_id, lic))
 
     patient_ids = []
     for i, name in enumerate(PATIENT_NAMES):
         handle = name.lower().replace(" ", ".")
-        uid = user(name, f"{handle}pharmafinder", "patient", f"07330000{i:02d}")
+        uid = user(name, f"{handle}@pharmafinder.test", "patient", f"07330000{i:02d}")
         dob = f"{rng.randint(1950, 2004)}-{rng.randint(1, 12):02d}-{rng.randint(1, 28):02d}"
         cur.execute("INSERT INTO patients (user_id, date_of_birth, sub_county) VALUES (%s,%s,%s)",
                     (uid, dob, SUB_COUNTIES[i % len(SUB_COUNTIES)]))
@@ -163,7 +171,7 @@ def seed(cur, password=PASSWORD, with_sample_prescriptions=True):
         cur.execute("INSERT INTO medicines (brand_name, generic_name, strength_form, requires_prescription) "
                     "VALUES (%s,%s,%s,%s)", (brand, generic, form, rx))
 
-    # each pharmacy carries medicines at different prices
+
 
     for pharmacy_id in range(1, len(PHARMACIES) + 1):
         for medicine_id, (_b, _g, _f, _rx, base) in enumerate(MEDICINES, start=1):
@@ -184,7 +192,7 @@ def seed(cur, password=PASSWORD, with_sample_prescriptions=True):
             (2, 0, [(11, "1 tablet", "Once daily", 30, 30)], "active"),
         ]
         for idx, (p_i, d_i, items, status) in enumerate(samples):
-            code = ["PF7K-AAA2", "PF7K-BBB3", "PF7K-CCC4"][idx]
+            code = ["PF7K-AAA2", "PF7K-BBB3", "PF7K-CCC4"][idx]  
             cur.execute("""INSERT INTO prescriptions (code, patient_id, doctor_id, issue_date, expiry_date, status)
                            VALUES (%s,%s,%s,%s,%s,%s)""",
                         (code, patient_ids[p_i], doctor_ids[d_i], today, today + timedelta(days=30), status))
@@ -207,8 +215,8 @@ def main():
     conn.close()
     print(f"Database '{Config.DB_NAME}' created and seeded with data.")
     print(f"All accounts use the password: {PASSWORD}")
-    print("  admin@pharmafinder | faith.chebet@pharmafinder (doctor)")
-    print("  grace.jebet@pharmafinder (pharmacist) | aline.chepkoechQpharmafinder (patient)")
+    print("  admin@pharmafinder.test | faith.chebet@pharmafinder.test (doctor)")
+    print("  grace.jebet@pharmafinder.test (pharmacist) | aline.chepkoech@pharmafinder.test (patient)")
 
 
 if __name__ == "__main__":
