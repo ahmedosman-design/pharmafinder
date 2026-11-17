@@ -1,0 +1,277 @@
+/* ==========================================================================
+   PharmaFinder - shared stylesheet
+   Bootstrap 5 gives us the grid and base components. This file sets the
+   PharmaFinder look: deep pharmacy green, warm paper, flat panels.
+
+   Contents
+   1. Design tokens
+   2. Base typography and links
+   3. Buttons and forms
+   4. App shell (side rail + main area)
+   5. Panels, tables, badges, stats
+   6. Prescription slip
+   7. Pharmacy search results and map
+   8. Login page
+   9. Toasts, empty states, utilities
+   10. Responsive rules
+   ========================================================================== */
+
+/* 1. Design tokens ------------------------------------------------------- */
+:root {
+  /* colour */
+  --pf-green: #0f5a4a;
+  --pf-green-dark: #0a4236;
+  --pf-green-soft: #e3efeb;
+  --pf-paper: #fafbf8;
+  --pf-white: #1c2a27;
+  --pf-muted: #5c6b67;
+  --pf-line: #d6ded9;
+  --pf-amber: #b26b00;
+  --pf-amber-soft: #fbefd9;
+  --pf-red: #b3261e;
+  --pf-focus: #e8a33d;
+  --pf-red-soft: #fbe4e2;         
+
+  /* shape and spacing */
+  --pf-radius: 8px;
+  --pf-radius-sm: 6px;
+  --pf-gap: 1.25rem;
+  --pf-rail-width: 240px;
+
+  /* type */
+  --pf-font: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --pf-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* wire the tokens into Bootstrap */
+  --bs-body-font-family: var(--pf-font);
+  --bs-body-color: var(--pf-ink);
+  --bs-body-bg: var(--pf-paper);
+  --bs-primary: var(--pf-green);
+  --bs-primary-rgb: 15, 90, 74;
+  --bs-link-color: var(--pf-green);
+  --bs-link-hover-color: var(--pf-green-dark);
+  --bs-border-color: var(--pf-line);
+}
+
+/* 2. Base typography and links ------------------------------------------ */
+body { font-size: 1rem; line-height: 1.55; }
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.01em; }
+h1 { font-size: 1.75rem; margin-bottom: 1rem; }
+h2 { font-size: 1.3rem; }
+h3 { font-size: 1.05rem; }
+.text-muted { color: var(--pf-muted) !important; }
+a { text-underline-offset: 2px; }
+
+/* Visible keyboard focus everywhere */
+:focus-visible { outline: 3px solid var(--pf-focus); outline-offset: 2px; }
+
+/* 3. Buttons and forms --------------------------------------------------- */
+.btn { border-radius: var(--pf-radius-sm); font-weight: 600; }
+
+.btn-primary {
+  --bs-btn-bg: var(--pf-green);
+  --bs-btn-border-color: var(--pf-green);
+  --bs-btn-hover-bg: var(--pf-green-dark);
+  --bs-btn-hover-border-color: var(--pf-green-dark);
+  --bs-btn-active-bg: var(--pf-green-dark);
+  --bs-btn-active-border-color: var(--pf-green-dark);
+  --bs-btn-disabled-bg: #7aa69b;
+  --bs-btn-disabled-border-color: #7aa69b;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--pf-green);
+  --bs-btn-border-color: var(--pf-green);
+  --bs-btn-hover-bg: var(--pf-green);
+  --bs-btn-hover-border-color: var(--pf-green);
+  --bs-btn-active-bg: var(--pf-green-dark);
+  --bs-btn-active-border-color: var(--pf-green-dark);
+}
+
+.form-label { font-weight: 600; font-size: .92rem; margin-bottom: .3rem; }
+.form-control, .form-select { border-radius: var(--pf-radius-sm); border-color: var(--pf-line); }
+.form-control:focus, .form-select:focus {
+  border-color: var(--pf-green);
+  box-shadow: 0 0 0 .2rem rgba(15, 90, 74, .18);
+}
+
+/* 4. App shell: green rail on the left, content on paper ----------------- */
+.pf-shell { display: grid; grid-template-columns: var(--pf-rail-width) 1fr; min-height: 100vh; }
+
+.pf-rail {
+  background: var(--pf-green);
+  color: var(--pf-white);
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pf-brand {
+  display: flex; align-items: center; gap: .6rem;
+  font-weight: 800; font-size: 1.15rem;
+  color: var(--pf-white); text-decoration: none;
+}
+.pf-cross { width: 28px; height: 28px; flex: none; }
+
+.pf-rail nav a {
+  display: block;
+  color: #d6ebe5;
+  text-decoration: none;
+  padding: .55rem .75rem;
+  border-radius: var(--pf-radius-sm);
+  transition: background-color .15s;
+}
+.pf-rail nav a:hover { background: rgba(255, 255, 255, .1); color: var(--pf-white); }
+.pf-rail nav a.active { background: var(--pf-white); color: var(--pf-green); font-weight: 600; }
+
+.pf-who { margin-top: auto; font-size: .875rem; color: #d6ebe5; overflow-wrap: anywhere; }
+.pf-who strong { color: var(--pf-white); display: block; }
+.pf-who button { color: var(--pf-white); border-color: rgba(255, 255, 255, .5); }
+
+.pf-main { padding: 2rem clamp(1rem, 3vw, 2.5rem); max-width: 1200px; width: 100%; }
+
+.pf-demo {
+  display: inline-block;
+  background: var(--pf-amber-soft); color: #6b4300;
+  border-radius: var(--pf-radius-sm);
+  padding: .4rem .75rem; margin-bottom: 1rem;
+  font-size: .85rem;
+}
+
+/* Only the active page section is visible */
+.pf-section { display: none; }
+.pf-section.active { display: block; }
+
+/* 5. Panels, tables, badges, stats --------------------------------------- */
+/* Flat sheets with a hairline border. Hierarchy comes from headings, not shadows. */
+.pf-panel {
+  background: var(--pf-white);
+  border: 1px solid var(--pf-line);
+  border-radius: var(--pf-radius);
+  padding: var(--pf-gap);
+  margin-bottom: var(--pf-gap);
+}
+.pf-panel > h2:first-child, .pf-panel > h3:first-child { margin-top: 0; }
+
+.table { --bs-table-bg: transparent; }
+.table > :not(caption) > * > * { padding: .55rem .6rem; }
+.table thead th {
+  font-size: .8rem; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--pf-muted); border-bottom-width: 2px;
+}
+
+.status {
+  display: inline-block;
+  padding: .15rem .6rem;
+  border-radius: 999px;
+  font-size: .8rem; font-weight: 600;
+}
+.status-active { background: var(--pf-green-soft); color: var(--pf-green); }
+.status-filled { background: #e9ecea; color: #44514d; }
+.status-expired, .status-cancelled, .status-revoked { background: var(--pf-red-soft); color: var(--pf-red); }
+
+.stock-ok  { color: var(--pf-green); font-weight: 600; }
+.stock-low { color: var(--pf-amber); font-weight: 600; }
+.stock-out { color: var(--pf-red);   font-weight: 600; }
+.row-low { background: var(--pf-amber-soft); }
+.row-out { background: var(--pf-red-soft); }
+
+.pf-stat {
+  background: var(--pf-white);
+  border: 1px solid var(--pf-line);
+  border-radius: var(--pf-radius);
+  padding: .9rem 1rem;
+}
+.pf-stat b { display: block; font-size: 1.6rem; line-height: 1.2; }
+
+/* 6. Prescription slip - the signature element --------------------------- */
+.rx-slip {
+  position: relative;
+  background: var(--pf-white);
+  border: 1px solid var(--pf-line);
+  border-left: 6px solid var(--pf-green);
+  border-radius: 4px var(--pf-radius) var(--pf-radius) 4px;
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+.rx-slip.is-filled { border-left-color: #6c7a76; }
+.rx-slip.is-expired, .rx-slip.is-cancelled { border-left-color: var(--pf-red); opacity: .85; }
+
+.rx-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: .75rem; }
+.rx-mark { font-family: Georgia, serif; font-style: italic; font-size: 1.6rem; line-height: 1; color: var(--pf-green); margin-right: .5rem; }
+.rx-code { font-family: var(--pf-mono); font-size: 1.6rem; font-weight: 700; letter-spacing: .08em; color: var(--pf-ink); }
+.rx-code-lg { font-size: clamp(2rem, 6vw, 3rem); }
+.rx-meta { color: var(--pf-muted); font-size: .9rem; }
+
+.rx-items { margin: .9rem 0 .25rem; padding: 0; list-style: none; border-top: 1px dashed var(--pf-line); }
+.rx-items li {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem;
+  padding: .55rem 0;
+  border-bottom: 1px dashed var(--pf-line);
+}
+.rx-items .dose { color: var(--pf-muted); font-size: .92rem; }
+
+/* 7. Pharmacy search results and map -------------------------------------- */
+.pf-map { height: 420px; border-radius: var(--pf-radius); border: 1px solid var(--pf-line); }
+
+.pf-result { display: flex; justify-content: space-between; gap: 1rem; padding: .75rem 0; border-bottom: 1px solid var(--pf-line); }
+.pf-result:last-child { border-bottom: 0; }
+.pf-result.is-best { background: var(--pf-green-soft); margin: 0 -.75rem; padding: .75rem; border-radius: var(--pf-radius-sm); }
+
+/* 8. Login page ------------------------------------------------------------ */
+.pf-auth { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+
+.pf-auth-art {
+  background: var(--pf-green); color: var(--pf-white);
+  padding: clamp(2rem, 5vw, 4rem);
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.pf-auth-art h1 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; max-width: 14ch; margin: 2rem 0 1rem; }
+.pf-auth-art p { color: #d6ebe5; max-width: 42ch; font-size: 1.05rem; }
+
+/* The tilted sample prescription */
+.pf-auth-slip {
+  background: var(--pf-white); color: var(--pf-ink);
+  border-radius: var(--pf-radius-sm);
+  padding: 1rem 1.25rem; max-width: 340px;
+  transform: rotate(-2deg);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .18);
+}
+
+.pf-auth-form { padding: clamp(2rem, 5vw, 4rem); display: flex; align-items: center; }
+.pf-auth-form > div { width: 100%; max-width: 420px; }
+
+/* 9. Toasts, empty states -------------------------------------------------- */
+.pf-toast { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 2000; max-width: 380px; }
+.pf-empty { color: var(--pf-muted); padding: 1.5rem 0; }
+
+/* 10. Responsive rules ----------------------------------------------------- */
+@media (max-width: 860px) {
+  /* rail becomes a top bar */
+  .pf-shell { grid-template-columns: 1fr; }
+  .pf-rail { flex-direction: row; flex-wrap: wrap; align-items: center; gap: .75rem; padding: .75rem 1rem; }
+  .pf-rail nav { display: flex; flex-wrap: wrap; gap: .25rem; order: 3; width: 100%; }
+  .pf-who { margin: 0 0 0 auto; text-align: right; }
+  .pf-who strong { display: inline; }
+  .pf-who span { display: none; }
+  .pf-who button { margin: 0 0 0 .5rem !important; }
+
+  .rx-head > .text-end { text-align: left !important; }
+  .pf-map { height: 320px; }
+
+  /* login: one column, hide the decorative slip */
+  .pf-auth { grid-template-columns: 1fr; }
+  .pf-auth-slip { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* Print: show only the prescription slip content */
+@media print {
+  .pf-rail, .pf-toast, .pf-demo { display: none !important; }
+  .pf-shell { display: block; }
+  .rx-slip { break-inside: avoid; }
+}
