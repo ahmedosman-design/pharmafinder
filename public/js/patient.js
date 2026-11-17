@@ -100,7 +100,7 @@
   function initMap() {
     if (map) return;
     map = L.map("map").setView([here.lat, here.lng], 13);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19, attribution: "&copy; OpenStreetMap contributors" }).addTo(map);
     markerLayer = L.layerGroup().addTo(map);
     showPharmacies();
