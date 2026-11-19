@@ -23,14 +23,15 @@
   --pf-green-dark: #0a4236;
   --pf-green-soft: #e3efeb;
   --pf-paper: #fafbf8;
-  --pf-white: #1c2a27;
+  --pf-white: #ffffff;
+  --pf-ink: #1c2a27;
   --pf-muted: #5c6b67;
   --pf-line: #d6ded9;
   --pf-amber: #b26b00;
   --pf-amber-soft: #fbefd9;
   --pf-red: #b3261e;
+  --pf-red-soft: #fbe4e2;
   --pf-focus: #e8a33d;
-  --pf-red-soft: #fbe4e2;         
 
   /* shape and spacing */
   --pf-radius: 8px;
@@ -96,7 +97,7 @@ a { text-underline-offset: 2px; }
 }
 
 /* 4. App shell: green rail on the left, content on paper ----------------- */
-.pf-shell { display: grid; grid-template-columns: var(--pf-rail-width) 1fr; min-height: 100vh; }
+.pf-shell { display: grid; grid-template-columns: var(--pf-rail-width) minmax(0, 1fr); min-height: 100vh; }
 
 .pf-rail {
   background: var(--pf-green);
@@ -129,7 +130,7 @@ a { text-underline-offset: 2px; }
 .pf-who strong { color: var(--pf-white); display: block; }
 .pf-who button { color: var(--pf-white); border-color: rgba(255, 255, 255, .5); }
 
-.pf-main { padding: 2rem clamp(1rem, 3vw, 2.5rem); max-width: 1200px; width: 100%; }
+.pf-main { min-width: 0; padding: 2rem clamp(1rem, 3vw, 2.5rem); max-width: 1200px; width: 100%; }
 
 .pf-demo {
   display: inline-block;
@@ -249,7 +250,7 @@ a { text-underline-offset: 2px; }
 /* 10. Responsive rules ----------------------------------------------------- */
 @media (max-width: 860px) {
   /* rail becomes a top bar */
-  .pf-shell { grid-template-columns: 1fr; }
+  .pf-shell { grid-template-columns: minmax(0, 1fr); }
   .pf-rail { flex-direction: row; flex-wrap: wrap; align-items: center; gap: .75rem; padding: .75rem 1rem; }
   .pf-rail nav { display: flex; flex-wrap: wrap; gap: .25rem; order: 3; width: 100%; }
   .pf-who { margin: 0 0 0 auto; text-align: right; }
